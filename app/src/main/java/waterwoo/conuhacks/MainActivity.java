@@ -27,11 +27,13 @@ import java.util.Scanner;
 public class MainActivity extends AppCompatActivity {
 
     private TextView resultText;
-    @Override
+    private TextView filterText;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         resultText = (TextView)findViewById(R.id.TVresult);
+        filterText = (TextView)findViewById(R.id.TVFilterCount);
     }
     //mic function
     public void onButtonClick(View v){
@@ -87,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
     }
     public void main(String[] args) throws IOException {
         //input stream and scanner
-        TextView filterCount;
         FileInputStream fin = new FileInputStream("C:/Users/Sean/Documents/ConuHacks2017/conuhacks/ConUHacksII/app/src/main/test.txt");
         Scanner fileInput = new Scanner(fin);
 
@@ -118,15 +119,15 @@ public class MainActivity extends AppCompatActivity {
         String filter1 = "uhm";
         String filter2 = "um";
         int filterCount = 0;
+
         for(int i = 0; i < speech.size(); i++){
             if(speech.get(i).contains(filter1) || speech.get(i).contains(filter2)) {
                 filterCount++;
             }
         }
-
-        System.out.println("******");
-        TextView filterText = (TextView)findViewById(R.id.TVFilterCount);
+        System.out.println("You said uhm/umm this many times: " + filterCount);
         filterText.setText("" + filterCount);
+        System.out.println("******");
         //close reading file
         fileInput.close();
         fin.close();
