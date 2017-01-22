@@ -3,6 +3,14 @@ package waterwoo.conuhacks;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -10,9 +18,29 @@ import java.util.Scanner;
  */
 
 public class WordCounter extends MainActivity{
+
+    //method to sort results by occurrences
+    public static Map<String, Integer> sortByValue(Map<String, Integer> map) {
+        List list = new LinkedList(map.entrySet());
+        Collections.sort(list, new Comparator() {
+
+            @Override
+            public int compare(Object o1, Object o2) {
+                return ((Comparable) ((Map.Entry) (o2)).getValue()).compareTo(((Map.Entry) (o1)).getValue());
+            }
+        });
+
+        Map result = new LinkedHashMap();
+        for (Iterator it = list.iterator(); it.hasNext();) {
+            Map.Entry entry = (Map.Entry) it.next();
+            result.put(entry.getKey(), entry.getValue());
+        }
+        return result;
+    }
+
     public static void main(String[] args) throws IOException{
         //input stream and scanner
-        FileInputStream fin = new FileInputStream("test.txt");
+        FileInputStream fin = new FileInputStream("C:/Users/Sean/Documents/ConuHacks2017/conuhacks/ConUHacksII/app/src/main/test.txt");
         Scanner fileInput = new Scanner(fin);
 
         //creating array list
@@ -36,13 +64,26 @@ public class WordCounter extends MainActivity{
                 wordCount.add(1);
             }
         }
+
         //close reading file
         fileInput.close();
         fin.close();
 
+
         //print out results
-        for(int i = 0; i < speech.size(); i++){
-            System.out.println(speech.get(i) + "occurred " + wordCount.get(i) + "time(s)");
+        HashMap<String, Integer> map = new HashMap<String, Integer>();
+        for(int i = 0; i < speech.size(); i++) {
+            map.put(speech.get(i), wordCount.get(i));
+        }
+        for(Map.Entry<String, Integer> entry: map.entrySet()) {
+            System.out.println(entry.getKey() + " appeared: " + entry.getValue() + " times");
+        }
+        System.out.println("********");
+
+        Map<String, Integer> sortedMap = WordCounter.sortByValue(map);
+
+        for(Map.Entry<String, Integer> entry: sortedMap.entrySet()) {
+            System.out.println(entry.getKey() + " appeared: " + entry.getValue() + " times");
         }
     }
 }
