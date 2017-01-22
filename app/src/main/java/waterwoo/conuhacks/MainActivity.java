@@ -1,7 +1,13 @@
 package waterwoo.conuhacks;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -13,18 +19,53 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 
 
 public class MainActivity extends AppCompatActivity {
 
+    private TextView resultText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        resultText = (TextView)findViewById(R.id.TVresult);
+    }
+    //mic function
+    public void onButtonClick(View v){
+        if(v.getId()== R.id.imageButton){
+            promptSpeechInput();
+        }
     }
 
+    public void promptSpeechInput(){
+        Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        i.putExtra(RecognizerIntent.EXTRA_PROMPT, "Say something!");
+
+        try{
+            startActivityForResult(i, 1000);
+        }
+        catch(ActivityNotFoundException a) {
+            Toast.makeText(MainActivity.this, "Sorry! Your device does not support speech recognition!", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    //receiving speech input
+    public void onActivityResult(int request_code, int result_code, Intent i){
+        super.onActivityResult(request_code, result_code, i);
+
+        switch(request_code){
+            case 1000: if(result_code == RESULT_OK && i != null){
+                ArrayList<String> result = i.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                resultText.setText(result.get(0));
+            }
+                break;
+        }
+    }
 
     //method to sort results by occurrences
     public static Map<String, Integer> sortByValue(Map<String, Integer> map) {
@@ -44,8 +85,9 @@ public class MainActivity extends AppCompatActivity {
         }
         return result;
     }
-    public static void main(String[] args) throws IOException {
+    public void main(String[] args) throws IOException {
         //input stream and scanner
+        TextView filterCount;
         FileInputStream fin = new FileInputStream("C:/Users/Sean/Documents/ConuHacks2017/conuhacks/ConUHacksII/app/src/main/test.txt");
         Scanner fileInput = new Scanner(fin);
 
@@ -74,19 +116,17 @@ public class MainActivity extends AppCompatActivity {
 
         //filtering filler words
         String filter1 = "uhm";
-        String filter2 = "umm";
+        String filter2 = "um";
         int filterCount = 0;
-
         for(int i = 0; i < speech.size(); i++){
             if(speech.get(i).contains(filter1) || speech.get(i).contains(filter2)) {
                 filterCount++;
             }
         }
-        System.out.println("You said uhm/umm this many times: " + filterCount);
 
         System.out.println("******");
-
-
+        TextView filterText = (TextView)findViewById(R.id.TVFilterCount);
+        filterText.setText("" + filterCount);
         //close reading file
         fileInput.close();
         fin.close();

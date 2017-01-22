@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">conuhacks</string>
+    <string name="emptystr" />
 </resources>
