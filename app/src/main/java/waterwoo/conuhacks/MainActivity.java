@@ -12,7 +12,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView resultText;
     private TextView filterText;
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,17 +96,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //method to convert speech to text output and write to SD card as .txt file
+
+    Scanner fileInput;
+
     public void writeToSDFile(String speechToTextInput){
         File root = android.os.Environment.getExternalStorageDirectory();
 
         File dir = new File(root.getAbsolutePath() + "/folder");
+        //creates file if doesn't exist
         dir.mkdirs();
+        //create a file
         File file = new File(dir, "text.txt");
         try {
             FileOutputStream f = new FileOutputStream(file);
+            //writing the text to be contained in our file
             PrintWriter pw = new PrintWriter(f);
             pw.println(speechToTextInput);
             pw.flush();
+            Scanner fileInput = new Scanner(file);
             pw.close();
             f.close();
         } catch (FileNotFoundException e) {
@@ -123,10 +130,10 @@ public class MainActivity extends AppCompatActivity {
             Log.e("tag", "No file browser installed. " + ex.getMessage());
         }
     }
+
+
     public void main(String[] args) throws IOException {
         //input stream and scanner
-        FileInputStream fin = new FileInputStream("text.txt");
-        Scanner fileInput = new Scanner(fin);
 
         //creating array list
         ArrayList<String> speech = new ArrayList<String>();
@@ -152,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         //debugging
 
         //filtering filler words
-        String filter1 = "uhm";
+        String filter1 = "testing";
         String filter2 = "um";
         int filterCount = 0;
 
@@ -166,7 +173,6 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("******");
         //close reading file
         fileInput.close();
-        fin.close();
 
 
         //print out results
