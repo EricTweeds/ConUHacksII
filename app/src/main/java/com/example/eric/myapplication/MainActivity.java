@@ -26,12 +26,24 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.microsoft.cognitiveservices.speechrecognition.ISpeechRecognitionServerEvents;
+import com.microsoft.bing.speech.SpeechClientStatus;
+import com.microsoft.cognitiveservices.speechrecognition.DataRecognitionClient;
+import com.microsoft.cognitiveservices.speechrecognition.ISpeechRecognitionServerEvents;
+import com.microsoft.cognitiveservices.speechrecognition.MicrophoneRecognitionClient;
+import com.microsoft.cognitiveservices.speechrecognition.RecognitionResult;
+import com.microsoft.cognitiveservices.speechrecognition.RecognitionStatus;
+import com.microsoft.cognitiveservices.speechrecognition.SpeechRecognitionMode;
+import com.microsoft.cognitiveservices.speechrecognition.SpeechRecognitionServiceFactory;
+import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
     boolean active = false;
     long temptime = 0;
     float alpha = new Float(0.5);
@@ -117,18 +129,18 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 try {
                     while (!isInterrupted()) {
-                        Thread.sleep(1000);
+                        Thread.sleep(250);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 try {
                                     int max = mRecorder.getMaxAmplitude();
                                     Log.d("hello", Integer.toString(max));
-                                    if (max < 10000) {
+                                    if (max < 30000) {
                                         audio.setProgress(max);
                                     }
                                     else{
-                                        audio.setProgress(10000);
+                                        audio.setProgress(30000);
                                     }
                                 } catch(NullPointerException e){
 
@@ -207,7 +219,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-
 
 
 }
