@@ -2,15 +2,21 @@ package waterwoo.conuhacks;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -64,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
             case 1000: if(result_code == RESULT_OK && i != null){
                 ArrayList<String> result = i.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                 resultText.setText(result.get(0));
+                writeToSDFile(result.get(0));
             }
                 break;
         }
@@ -87,9 +94,38 @@ public class MainActivity extends AppCompatActivity {
         }
         return result;
     }
+
+    //method to convert speech to text output and write to SD card as .txt file
+    public void writeToSDFile(String speechToTextInput){
+        File root = android.os.Environment.getExternalStorageDirectory();
+
+        File dir = new File(root.getAbsolutePath() + "/folder");
+        dir.mkdirs();
+        File file = new File(dir, "text.txt");
+        try {
+            FileOutputStream f = new FileOutputStream(file);
+            PrintWriter pw = new PrintWriter(f);
+            pw.println(speechToTextInput);
+            pw.flush();
+            pw.close();
+            f.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            Intent intent = new Intent(Intent.ACTION_EDIT);
+            Uri uri = Uri.fromFile(dir);
+            intent.setDataAndType(uri, "plain/text");
+            startActivity(intent);
+        } catch(Exception ex) {
+            Log.e("tag", "No file browser installed. " + ex.getMessage());
+        }
+    }
     public void main(String[] args) throws IOException {
         //input stream and scanner
-        FileInputStream fin = new FileInputStream("C:/Users/Sean/Documents/ConuHacks2017/conuhacks/ConUHacksII/app/src/main/test.txt");
+        FileInputStream fin = new FileInputStream("text.txt");
         Scanner fileInput = new Scanner(fin);
 
         //creating array list
